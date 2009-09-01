@@ -156,6 +156,14 @@ context "A Timecode of zero should" do
   end
 end
 
+context "Timecode.from_seconds should" do
+  specify "properly process this specific case for a float framerate" do
+    float_secs = 89.99165971643036
+    float_fps = 23.9898
+    lambda{ Timecode.from_seconds(float_secs, float_fps) }.should.not.raise
+  end
+end
+
 context "Timecode#to_seconds should" do
   specify "return a float" do
     Timecode.new(0).to_seconds.should.be.kind_of Float
@@ -415,6 +423,7 @@ context "Timecode.soft_parse should" do
     end.should.not.raise
   end
 end
+
 
 context "Timecode with unsigned integer conversions should" do
   

@@ -1,6 +1,6 @@
 = timecode
 
-* http://guerilla-di.rubyforge.org/timecode
+* http://guerilla-di.org/timecode
 
 == DESCRIPTION:
 
