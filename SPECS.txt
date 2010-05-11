@@ -26,6 +26,7 @@
 * report that the framerates are in delta
 * validate equality based on delta
 * report total as it's to_i
+* coerce itself to int
 * support hours
 * support minutes
 * support seconds
@@ -37,6 +38,9 @@
 == A Timecode of zero should
 * properly respond to zero?
 
+== Timecode.from_seconds should
+* properly process this specific case for a float framerate
+
 == Timecode#to_seconds should
 * return a float
 * return the value in seconds
@@ -46,12 +50,17 @@
 * properly present himself via inspect
 * properly print itself
 
-== An existing Timecode used within ranges should
-* properly provide successive value that is one frame up
-* work as a range member
+== An existing Timecode compared by adjacency
+* properly detect an adjacent timecode to the left
+* properly detect an adjacent timecode to the right
 
 == A Timecode on conversion should
 * copy itself with a different framerate
+* copy itself with a different framerate
+
+== An existing Timecode used within ranges should
+* properly provide successive value that is one frame up
+* work as a range member
 
 == A Timecode on calculations should
 * support addition
@@ -100,4 +109,4 @@
 * parse from a 4x4bits packed 32bit unsigned int
 * properly convert itself back to 4x4 bits 32bit unsigned int
 
-69 specifications (113 requirements), 0 failures
+74 specifications (118 requirements), 0 failures

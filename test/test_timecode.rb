@@ -106,6 +106,10 @@ context "An existing Timecode should" do
     Timecode.new(10).to_i.should.equal(10)
   end
   
+  specify "coerce itself to int" do
+    (10 + Timecode.new(2)).should.equal 12
+  end
+  
   specify "support hours" do
     @five_seconds.should.respond_to :hours
     @five_seconds.hours.should.equal 0
@@ -191,6 +195,25 @@ context "An existing Timecode on inspection should" do
   
   specify "properly print itself" do
     Timecode.new(5, 25).to_s.should.equal "00:00:00:05"
+  end
+end
+
+context "An existing Timecode compared by adjacency" do
+  specify "properly detect an adjacent timecode to the left" do
+    Timecode.new(10).should.be.adjacent_to(Timecode.new(9))
+  end
+  
+  specify "properly detect an adjacent timecode to the right" do
+    Timecode.new(10).should.be.adjacent_to(Timecode.new(11))
+  end
+  
+end
+
+context "A Timecode on conversion should" do
+  specify "copy itself with a different framerate" do
+    tc = Timecode.new(40,25)
+    at24 = tc.convert(24)
+    at24.total.should.equal 40
   end
 end
 

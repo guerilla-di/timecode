@@ -1,3 +1,7 @@
+=== 0.2.1 / 2010-05-11
+
+* Add Timecode#coerce and Timecode#adjacent_to?
+
 === 0.2.0 / 2009-02-26
 
 * Properly handle integers starting with 0 in Tiecode.parse (zef)

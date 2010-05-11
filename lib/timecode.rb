@@ -170,6 +170,20 @@ class Timecode
     end
   end
   
+  def coerce(to)
+    me = case to
+      when String
+        to_s
+      when Integer
+        to_i
+      when Float
+        to_f
+      else
+        self
+    end
+    [me, to]
+  end
+  
   # is the timecode at 00:00:00:00
   def zero?
     @total.zero?
@@ -256,6 +270,12 @@ class Timecode
     else
       self.class.new(@total + arg, @fps)
     end
+  end
+  
+  # Tells whether the passes timecode is immediately to the left or to the right of that one
+  # with a 1 frame difference
+  def adjacent_to?(another)
+    (self.succ == another) || (another.succ == self)
   end
   
   # Subtract a number of frames
