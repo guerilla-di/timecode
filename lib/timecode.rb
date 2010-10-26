@@ -23,11 +23,14 @@ class Timecode
   ALLOWED_FPS_DELTA = (0.001).freeze
   
   COMPLETE_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{2})$/
+  COMPLETE_TC_RE_24 = /^(\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
   DF_TC_RE = /^(\d{1,2}):(\d{1,2}):(\d{1,2});(\d{2})$/
   FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2}).(\d{1,8})$/
   
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
   WITH_FRAMES = "%02d:%02d:%02d:%02d"
+  WITH_FRAMES_24 = "%02d:%02d:%02d+%02d"
+  
   #:startdoc:
   
   # All Timecode lib errors inherit from this
@@ -83,6 +86,10 @@ class Timecode
       # 00:00:00:00
       elsif (input =~ COMPLETE_TC_RE)
         atoms_and_fps = input.scan(COMPLETE_TC_RE).to_a.flatten.map{|e| e.to_i} + [with_fps]
+        return at(*atoms_and_fps)
+      # 00:00:00+00
+      elsif (input =~ COMPLETE_TC_RE_24)
+        atoms_and_fps = input.scan(COMPLETE_TC_RE_24).to_a.flatten.map{|e| e.to_i} + [24]
         return at(*atoms_and_fps)
       # 00:00:00.0
       elsif input =~ FRACTIONAL_TC_RE
@@ -248,7 +255,11 @@ class Timecode
   
   # get formatted SMPTE timecode
   def to_s
-    WITH_FRAMES % value_parts
+    if (framerate_in_delta(fps, 24))
+      WITH_FRAMES_24 % value_parts
+    else
+      WITH_FRAMES % value_parts
+    end
   end
   
   # get total frames as float

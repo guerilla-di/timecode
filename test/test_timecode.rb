@@ -348,6 +348,13 @@ context "Timecode.parse should" do
     Timecode.parse(simple_tc).to_s.should.equal(simple_tc)
   end
   
+  specify "handle complete SMPTE timecode with plus for 24 frames per second" do
+    simple_tc = "00:10:34+10"
+    p = Timecode.parse(simple_tc)
+    p.to_s.should.equal(simple_tc)
+    p.fps.should.equal 24
+  end
+  
   specify "handle timecode with fractional seconds" do
     tc = Timecode.parse("10:10:10.2", 25)
     tc.to_s.should.equal "10:10:10:05"
