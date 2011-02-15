@@ -5,5 +5,4 @@ README.rdoc
 Rakefile
 SPECS.rdoc
 lib/timecode.rb
-lib/timecode/calculator.rb
 test/test_timecode.rb
