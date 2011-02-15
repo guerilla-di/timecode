@@ -1,7 +1,9 @@
+.DS_Store
 History.txt
 Manifest.txt
-README.txt
-SPECS.txt
+README.rdoc
 Rakefile
+SPECS.rdoc
 lib/timecode.rb
+lib/timecode/calculator.rb
 test/test_timecode.rb

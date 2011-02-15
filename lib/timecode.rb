@@ -20,6 +20,7 @@ class Timecode
   
   #:stopdoc:
   NTSC_FPS = (30.0 * 1000 / 1001).freeze
+  FILMSYNC_FPS = (24.0 * 1000 / 1001).freeze
   ALLOWED_FPS_DELTA = (0.001).freeze
   
   COMPLETE_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{2})$/
