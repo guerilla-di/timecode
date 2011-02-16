@@ -1,3 +1,7 @@
+=== 1.0.0 / 2011-02-16
+
+* After all these years we consider Timecode stable
+
 === 0.3.0 / 2010-10-25
 
 * Let Timecode.parse and Timecode#to_s handle 24fps timecode with a plus sign (00:00:00+10)
