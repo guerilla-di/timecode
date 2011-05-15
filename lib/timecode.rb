@@ -26,7 +26,8 @@ class Timecode
   COMPLETE_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{2})$/
   COMPLETE_TC_RE_24 = /^(\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
   DF_TC_RE = /^(\d{1,2}):(\d{1,2}):(\d{1,2});(\d{2})$/
-  FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2}).(\d{1,8})$/
+  FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2})\.(\d{1,8})$/
+  TICKS_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{3})$/
   
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
   WITH_FRAMES = "%02d:%02d:%02d:%02d"
@@ -95,6 +96,9 @@ class Timecode
       # 00:00:00.0
       elsif input =~ FRACTIONAL_TC_RE
         parse_with_fractional_seconds(input, with_fps)
+      # 00:00:00:000
+      elsif input =~ TICKS_TC_RE
+        parse_with_ticks(input, with_fps)
       # 10h 20m 10s 1f 00:00:00:01 - space separated is a sum of parts
       elsif input =~ /\s/
         parts = input.gsub(/\s/, ' ').split.reject{|e| e.strip.empty? }
@@ -155,6 +159,20 @@ class Timecode
       frame_idx = (fraction_part / seconds_per_frame).floor
 
       tc_with_frameno = tc_with_fractions_of_second.gsub(fraction_expr, ":%02d" % frame_idx)
+
+      parse(tc_with_frameno, fps)
+    end
+
+    # Parse a timecode with ticks of a second instead of frames. A 'tick' is defined as 
+    # 4 msec and has a range of 0 to 249. This format can show up in subtitle files for digital cinema
+    def parse_with_ticks(tc_with_ticks, fps = DEFAULT_FPS)
+      ticks_expr = /(\d{3})$/ 
+      ticks_part = (tc_with_ticks.scan(ticks_expr)[0][0]).to_i
+
+      seconds_per_frame = 1.0 / fps
+      frame_idx = ((ticks_part * 0.004) / seconds_per_frame ).floor
+
+      tc_with_frameno = tc_with_ticks.gsub(ticks_expr, "%02d" % frame_idx)
 
       parse(tc_with_frameno, fps)
     end
