@@ -81,7 +81,9 @@ class Timecode
     # * 10h 20m 10s 1f (or any combination thereof) - will be disassembled to hours, frames, seconds and so on automatically
     # * 123 - will be parsed as 00:00:01:23
     # * 00:00:00:00 - will be parsed as zero TC
-    def parse(input, with_fps = DEFAULT_FPS)
+    def parse(spaced_input, with_fps = DEFAULT_FPS)
+      input = spaced_input.strip
+      
       # Drop frame goodbye
       if (input =~ DF_TC_RE)
         raise Error, "We do not support drop-frame TC"
@@ -165,15 +167,17 @@ class Timecode
 
     # Parse a timecode with ticks of a second instead of frames. A 'tick' is defined as 
     # 4 msec and has a range of 0 to 249. This format can show up in subtitle files for digital cinema
+    # used by CineCanvas systems
     def parse_with_ticks(tc_with_ticks, fps = DEFAULT_FPS)
-      ticks_expr = /(\d{3})$/ 
-      ticks_part = (tc_with_ticks.scan(ticks_expr)[0][0]).to_i
-
+      ticks_expr = /(\d{3})$/
+      num_ticks = tc_with_ticks.scan(ticks_expr).to_s.to_i
+      
+      raise RangeError, "Invalid tick count #{num_ticks}" if num_ticks > 249
+      
       seconds_per_frame = 1.0 / fps
-      frame_idx = ((ticks_part * 0.004) / seconds_per_frame ).floor
-
+      frame_idx = ( (num_ticks * 0.004) / seconds_per_frame ).floor
       tc_with_frameno = tc_with_ticks.gsub(ticks_expr, "%02d" % frame_idx)
-
+      
       parse(tc_with_frameno, fps)
     end
   

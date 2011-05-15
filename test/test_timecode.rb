@@ -297,7 +297,7 @@ context "A Timecode used with fractional number of seconds" do
     tc.with_frames_as_fraction.should.equal "00:00:03.96"
     tc.with_fractional_seconds.should.equal "00:00:03.96"
   end
-
+  
   specify "properly translate to frames when instantiated from fractional seconds" do
     fraction = 7.1
     tc = Timecode.from_seconds(fraction, 10)
@@ -359,6 +359,32 @@ context "Timecode.parse should" do
     tc = Timecode.parse("10:10:10.2", 25)
     tc.to_s.should.equal "10:10:10:05"
   end
+  
+  specify "handle timecode with ticks" do
+    tc = Timecode.parse("10:10:10:103", 25)
+    tc.to_s.should.equal "10:10:10:10"
+    
+    tc = Timecode.parse("10:10:10:249", 25)
+    tc.to_s.should.equal "10:10:10:24"
+  end
+
+  specify "raise when there are more than 249 ticks" do
+    lambda {
+      tc = Timecode.parse("10:10:10:250", 25)
+    }.should.raise(Timecode::RangeError)
+  end
+
+  specify "handle timecode with fractional seconds with spaces at start and end" do
+    tc = Timecode.parse(" 00:00:01.040 ")
+    tc.to_s.should.equal "00:00:01:01"
+  end
+  
+# I am commenting this one out for now, these were present in some odd subtitle file.
+# What we probably need is a way for Timecode to "extract" timecodes from a chunk of text.
+# specify "handle timecode with fractional seconds with weirdo UTF spaces at start and end" do
+#   tc = Timecode.parse("﻿00:00:01.040")
+#   tc.to_s.should.equal "00:00:01:01"
+# end
   
   specify "parse a row of numbers as parts of a timecode starting from the right" do
     Timecode.parse("10").should.equal Timecode.new(10)

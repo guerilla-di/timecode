@@ -1,5 +1,9 @@
 === 1.0.0 / 2011-02-16
 
+* Added timecode with ticks support, used by CineCanvas (wolfgangw)
+
+=== 1.0.0 / 2011-02-16
+
 * After all these years we consider Timecode stable
 
 === 0.3.0 / 2010-10-25

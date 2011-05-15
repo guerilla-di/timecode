@@ -87,6 +87,9 @@
 * handle complete SMPTE timecode
 * handle complete SMPTE timecode with plus for 24 frames per second
 * handle timecode with fractional seconds
+* handle timecode with ticks
+* raise when there are more than 249 ticks
+* handle timecode with fractional seconds with spaces at start and end
 * parse a row of numbers as parts of a timecode starting from the right
 * parse a number with f suffix as frames
 * parse a number with s suffix as seconds
@@ -110,4 +113,4 @@
 * parse from a 4x4bits packed 32bit unsigned int
 * properly convert itself back to 4x4 bits 32bit unsigned int
 
-75 specifications (120 requirements), 0 failures
+78 specifications (124 requirements), 0 failures
