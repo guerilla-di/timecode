@@ -12,7 +12,7 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 class Timecode
-  VERSION = '1.0.0'
+  VERSION = '1.1.0'
 
   include Comparable
   
