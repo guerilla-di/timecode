@@ -12,7 +12,7 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 class Timecode
-  VERSION = '1.1.0'
+  VERSION = '1.1.1'
 
   include Comparable
   
@@ -146,7 +146,7 @@ class Timecode
           raise RangeError, "There can be no more than 59 minutes, got #{mins}"
         when secs > 59
           raise RangeError, "There can be no more than 59 seconds, got #{secs}"
-        when frames > (with_fps -1)
+        when frames > (with_fps - 1)
           raise RangeError, "There can be no more than #{with_fps -1} frames @#{with_fps}, got #{frames}"
       end
     end
@@ -170,7 +170,7 @@ class Timecode
     # used by CineCanvas systems
     def parse_with_ticks(tc_with_ticks, fps = DEFAULT_FPS)
       ticks_expr = /(\d{3})$/
-      num_ticks = tc_with_ticks.scan(ticks_expr).to_s.to_i
+      num_ticks = tc_with_ticks.scan(ticks_expr).join.to_i
       
       raise RangeError, "Invalid tick count #{num_ticks}" if num_ticks > 249
       
