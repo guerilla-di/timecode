@@ -3,6 +3,5 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
-SPECS.rdoc
 lib/timecode.rb
 test/test_timecode.rb

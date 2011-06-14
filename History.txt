@@ -1,3 +1,8 @@
+=== 1.1.1 / 2011-06-14
+
+* Fix parsing of tick frame counts in Ruby 1.9 due to Array#to_s having different semantics
+* Switch to bacon for specs.
+
 === 1.1.0 / 2011-02-16
 
 * Added timecode with ticks support, used by CineCanvas (wolfgangw)
