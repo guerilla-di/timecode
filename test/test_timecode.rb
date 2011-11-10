@@ -289,7 +289,7 @@ end
 describe "A Timecode used with fractional number of seconds" do
   
   it "should should properly return fractional seconds" do
-    tc = Timecode.new(100 -1, fps = 25)
+    tc = Timecode.new(100 - 1, fps = 25)
     tc.frames.should.equal 24
     
     tc.with_frames_as_fraction.should.equal "00:00:03.96"

@@ -12,7 +12,7 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 class Timecode
-  VERSION = '1.1.1'
+  VERSION = '1.1.2'
 
   include Comparable
   
@@ -147,7 +147,7 @@ class Timecode
         when secs > 59
           raise RangeError, "There can be no more than 59 seconds, got #{secs}"
         when frames > (with_fps - 1)
-          raise RangeError, "There can be no more than #{with_fps -1} frames @#{with_fps}, got #{frames}"
+          raise RangeError, "There can be no more than #{with_fps - 1} frames @#{with_fps}, got #{frames}"
       end
     end
     
@@ -337,7 +337,7 @@ class Timecode
   # Get the number of times a passed timecode fits into this time span (if performed with Timecode) or 
   # a Timecode that multiplied by arg will give this one
   def /(arg)
-    arg.is_a?(Timecode) ?  (@total / arg.total) : self.class.new(@total /arg, @fps)
+    arg.is_a?(Timecode) ?  (@total / arg.total) : self.class.new(@total / arg, @fps)
   end
   
   # Timecodes can be compared to each other
