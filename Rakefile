@@ -1,14 +1,28 @@
 require 'rubygems'
-require 'hoe'
-require './lib/timecode.rb'
+require 'jeweler'
+require './lib/timecode'
 
-Hoe.spec('timecode') do |p|
-  p.version = Timecode::VERSION
-  p.readme_file   = 'README.rdoc'
-  p.extra_rdoc_files  = FileList['*.rdoc']
+Jeweler::Tasks.new do |gem|
+  gem.version = Timecode::VERSION
+  gem.name = "timecode"
+  gem.summary = "Timecode value class"
+  gem.email = "me@julik.nl"
+  gem.homepage = "http://guerilla-di.org/timecode"
+  gem.authors = ["Julik Tarkhanov"]
+  gem.license = 'MIT'
   
-  p.developer('Julik', 'me@julik.nl')
-  p.extra_dev_deps = {"bacon" => ">=0"}
-  p.rubyforge_name = 'guerilla-di'
-  p.remote_rdoc_dir = 'timecode'
+  # Deps
+  gem.add_development_dependency "jeweler"
+  gem.add_development_dependency "rake"
+  gem.add_development_dependency "bacon"
 end
+
+Jeweler::RubygemsDotOrgTasks.new
+
+require 'rake/testtask'
+desc "Run all tests"
+task :test do
+  ruby "bacon -Ilib --automatic --quiet"
+end
+
+task :default => [ :test ]
