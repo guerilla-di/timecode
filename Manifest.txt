@@ -1,7 +1,0 @@
-.DS_Store
-History.txt
-Manifest.txt
-README.rdoc
-Rakefile
-lib/timecode.rb
-test/test_timecode.rb
