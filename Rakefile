@@ -10,11 +10,6 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://guerilla-di.org/timecode"
   gem.authors = ["Julik Tarkhanov"]
   gem.license = 'MIT'
-  
-  # Deps
-  gem.add_development_dependency "jeweler"
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "bacon"
 end
 
 Jeweler::RubygemsDotOrgTasks.new

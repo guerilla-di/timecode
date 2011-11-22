@@ -9,18 +9,20 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2011-11-21"
+  s.date = "2011-11-22"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
     "README.rdoc"
   ]
   s.files = [
+    ".travis.yml",
+    "Gemfile",
     "History.txt",
-    "Manifest.txt",
     "README.rdoc",
     "Rakefile",
     "lib/timecode.rb",
-    "test/test_timecode.rb"
+    "test/test_timecode.rb",
+    "timecode.gemspec"
   ]
   s.homepage = "http://guerilla-di.org/timecode"
   s.licenses = ["MIT"]
