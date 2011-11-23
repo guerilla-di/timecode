@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "History.txt",
     "README.rdoc",
     "Rakefile",
+    "lib/bacon_task.rb",
     "lib/timecode.rb",
     "test/test_timecode.rb",
     "timecode.gemspec"
