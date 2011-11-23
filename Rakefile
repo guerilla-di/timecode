@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'jeweler'
+require 'bacon'
 require './lib/timecode'
+require './lib/bacon_task'
 
 Jeweler::Tasks.new do |gem|
   gem.version = Timecode::VERSION
@@ -17,10 +19,10 @@ end
 
 Jeweler::RubygemsDotOrgTasks.new
 
-require 'rake/testtask'
 desc "Run all tests"
-task :test do
-  ruby "bacon -Ilib --automatic --quiet"
+Bacon::Rake::Task.new do |t|
+  t.format = :specdoc
+  t.files << "test/test_timecode.rb"
 end
 
 task :default => [ :test ]
