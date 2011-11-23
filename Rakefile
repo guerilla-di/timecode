@@ -10,6 +10,9 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://guerilla-di.org/timecode"
   gem.authors = ["Julik Tarkhanov"]
   gem.license = 'MIT'
+  
+  # Do not package invisibles
+  gem.files.exclude ".*"
 end
 
 Jeweler::RubygemsDotOrgTasks.new
