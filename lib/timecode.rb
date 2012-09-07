@@ -11,14 +11,29 @@
 #   composed_of :source_tc, :class_name => 'Timecode',
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
-class Timecode
-  VERSION = '1.1.2'
+require "approximately"
+include Approximately
 
-  include Comparable
+class Timecode
+  
+  VERSION = '1.1.2'
+  
+  include Comparable, Approximately
   
   DEFAULT_FPS = 25.0
   
   #:stopdoc:
+  
+  # Quoting the Flame project configs here (as of ver. 2013 at least)
+  # TIMECODE KEYWORD
+  # ----------------
+  # Specifies the default timecode format used by the project. Currently
+  # supported formats are 23.976, 24, 25, 29.97, 30, 50, 59.94 or 60 fps
+  # timecodes.
+  STANDARD_RATES = [23.976, 24, 25, 29.97, 30, 50, 59.94, 60].map do | float |
+    Approximately.approx(float)
+  end.freeze
+  
   NTSC_FPS = (30.0 * 1000 / 1001).freeze
   FILMSYNC_FPS = (24.0 * 1000 / 1001).freeze
   ALLOWED_FPS_DELTA = (0.001).freeze
@@ -52,6 +67,13 @@ class Timecode
   def initialize(total = 0, fps = DEFAULT_FPS)
     raise WrongFramerate, "FPS cannot be zero" if fps.zero?
     
+    unless self.class.supported_framerates.include?(fps)
+      last_tc = self.class.supported_framerates[-1]
+      all_others = self.class.supported_framerates[0..-2]
+      supported = "%s and %s are supported" % [all_others.join(", "), last_tc]
+      raise WrongFramerate, "Framerate #{fps} is not in the list of supported framerates (#{supported})"
+    end 
+    
     # If total is a string, use parse
     raise RangeError, "Timecode cannot be negative" if total.to_i < 0
     # Always cast framerate to float, and num of rames to integer
@@ -65,6 +87,17 @@ class Timecode
   end
   
   class << self
+    
+    # Returns the list of supported framerates for this subclass of Timecode
+    def supported_framerates
+      STANDARD_RATES + (@custom_framerates || [])
+    end
+    
+    # Use this to add a custom framerate
+    def add_custom_framerate!(rate)
+      @custom_framerates ||= []
+      @custom_framerates.push(rate)
+    end
     
     # Use initialize for integers and parsing for strings
     def new(from, fps = DEFAULT_FPS)

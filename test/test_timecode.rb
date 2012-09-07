@@ -3,6 +3,14 @@ require 'bacon'
 
 require File.expand_path(File.dirname(__FILE__)) + '/../lib/timecode'
 
+# Needed for a number of tests from the past
+Timecode.add_custom_framerate!(10)
+Timecode.add_custom_framerate!(12.5)
+Timecode.add_custom_framerate!(57)
+Timecode.add_custom_framerate!(45)
+Timecode.add_custom_framerate!(12)
+
+
 describe "Timecode.new should" do
   
   it "instantiate from int" do
