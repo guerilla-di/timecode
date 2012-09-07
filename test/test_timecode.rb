@@ -339,6 +339,13 @@ describe "A custom Timecode descendant should" do
 
 end
 
+describe "Timecode.from_filename_in_sequence should" do
+  it "detect the timecode" do
+    tc = Timecode.from_filename_in_sequence("foobar.0000012.jpg")
+    tc.should_equal(Timecode.new(12))
+  end
+end
+
 describe "Timecode.parse should" do
   
   it "handle complete SMPTE timecode" do
