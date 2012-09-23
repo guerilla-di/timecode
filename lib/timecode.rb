@@ -27,6 +27,7 @@ class Timecode
   COMPLETE_TC_RE_24 = /^(\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
   DF_TC_RE = /^(\d{1,2}):(\d{1,2}):(\d{1,2});(\d{2})$/
   FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2})\.(\d{1,8})$/
+  SRT_TC_RE = /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/
   TICKS_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{3})$/
   
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
@@ -98,6 +99,9 @@ class Timecode
       # 00:00:00.0
       elsif input =~ FRACTIONAL_TC_RE
         parse_with_fractional_seconds(input, with_fps)
+      # 00:00:00,000
+      elsif input =~ SRT_TC_RE
+        parse_with_srt(input, with_fps)
       # 00:00:00:000
       elsif input =~ TICKS_TC_RE
         parse_with_ticks(input, with_fps)
@@ -161,6 +165,20 @@ class Timecode
       frame_idx = (fraction_part / seconds_per_frame).floor
 
       tc_with_frameno = tc_with_fractions_of_second.gsub(fraction_expr, ":%02d" % frame_idx)
+
+      parse(tc_with_frameno, fps)
+    end
+
+    # Parse a timecode with fractional seconds (euro style, SRT) instead of frames. This is how SRT reports
+    # a timecode. Note the ','
+    def parse_with_srt(tc_with_srt, fps = DEFAULT_FPS)
+      fraction_expr = /,(\d+)$/
+      fraction_part = ('.' + tc_with_srt.scan(fraction_expr)[0][0]).to_f
+
+      seconds_per_frame = 1.0 / fps.to_f
+      frame_idx = (fraction_part / seconds_per_frame).floor
+
+      tc_with_frameno = tc_with_srt.gsub(fraction_expr, ":%02d" % frame_idx)
 
       parse(tc_with_frameno, fps)
     end
