@@ -303,6 +303,7 @@ describe "A Timecode used with fractional number of seconds" do
     
     tc.with_frames_as_fraction.should.equal "00:00:03.96"
     tc.with_fractional_seconds.should.equal "00:00:03.96"
+    tc.with_srt_fraction.should_equal "00:00:03,96"
   end
   
   it "properly translate to frames when instantiated from fractional seconds" do
@@ -371,6 +372,9 @@ describe "Timecode.parse should" do
   
   it "handle timecode with fractional seconds" do
     tc = Timecode.parse("10:10:10.2", 25)
+    tc.to_s.should.equal "10:10:10:05"
+    
+    tc = Timecode.parse("10:10:10,200", 25)
     tc.to_s.should.equal "10:10:10:05"
   end
   
@@ -448,7 +452,7 @@ describe "Timecode.parse should" do
     fraction = "00:00:07.1"
     tc = Timecode.parse_with_fractional_seconds(fraction, 10)
     tc.to_s.should.equal "00:00:07:01"
-
+    
     fraction = "00:00:07.5"
     tc = Timecode.parse_with_fractional_seconds(fraction, 10)
     tc.to_s.should.equal "00:00:07:05"

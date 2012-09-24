@@ -40,10 +40,11 @@ class Timecode
   COMPLETE_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{2})$/
   COMPLETE_TC_RE_24 = /^(\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
   DF_TC_RE = /^(\d{1,2}):(\d{1,2}):(\d{1,2});(\d{2})$/
-  FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2})\.(\d{1,8})$/
+  FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2})[\.,](\d{1,8})$/
   TICKS_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{3})$/
   
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
+  WITH_FRACTIONS_OF_SECOND_COMMA = "%02d:%02d:%02d,%03d"
   WITH_FRAMES = "%02d:%02d:%02d:%02d"
   WITH_FRAMES_24 = "%02d:%02d:%02d+%02d"
   
@@ -194,7 +195,7 @@ class Timecode
     # Parse a timecode with fractional seconds instead of frames. This is how ffmpeg reports
     # a timecode
     def parse_with_fractional_seconds(tc_with_fractions_of_second, fps = DEFAULT_FPS)
-      fraction_expr = /\.(\d+)$/
+      fraction_expr = /[\.,](\d+)$/
       fraction_part = ('.' + tc_with_fractions_of_second.scan(fraction_expr)[0][0]).to_f
 
       seconds_per_frame = 1.0 / fps.to_f
@@ -393,12 +394,20 @@ class Timecode
   # method to get the timecode that adheres to that expectation. The return of this method can be fed
   # to ffmpeg directly.
   #  Timecode.parse("00:00:10:24", 25).with_frames_as_fraction #=> "00:00:10.96"
-  def with_frames_as_fraction
+  def with_frames_as_fraction(pattern = WITH_FRACTIONS_OF_SECOND)
     vp = value_parts.dup
     vp[-1] = (100.0 / @fps) * vp[-1]
-    WITH_FRACTIONS_OF_SECOND % vp
+    pattern % vp
   end
   alias_method :with_fractional_seconds, :with_frames_as_fraction
+  
+  # FFmpeg expects a fraction of a second as the last element instead of number of frames. Use this
+  # method to get the timecode that adheres to that expectation. The return of this method can be fed
+  # to ffmpeg directly.
+  #  Timecode.parse("00:00:10:24", 25).with_srt_fraction #=> "00:00:10,96"
+  def with_srt_fraction
+    with_frames_as_fraction(WITH_FRACTIONS_OF_SECOND_COMMA)
+  end
   
   # Validate that framerates are within a small delta deviation considerable for floats
   def framerate_in_delta(one, two)
