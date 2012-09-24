@@ -170,6 +170,7 @@ describe "Timecode.from_seconds should" do
   it "properly process this specific case for a float framerate" do
     float_secs = 89.99165971643036
     float_fps = 23.9898
+    Timecode.add_custom_framerate!(float_fps)
     lambda{ Timecode.from_seconds(float_secs, float_fps) }.should.not.raise
   end
 end
@@ -347,12 +348,6 @@ describe "A custom Timecode descendant should" do
 
 end
 
-describe "Timecode.from_filename_in_sequence should" do
-  it "detect the timecode" do
-    tc = Timecode.from_filename_in_sequence("foobar.0000012.jpg")
-    tc.should_equal(Timecode.new(12))
-  end
-end
 
 describe "Timecode.parse should" do
   

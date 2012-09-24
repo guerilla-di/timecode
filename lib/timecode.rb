@@ -12,7 +12,6 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 require "approximately"
-include Approximately
 
 class Timecode
   
@@ -31,7 +30,7 @@ class Timecode
   # supported formats are 23.976, 24, 25, 29.97, 30, 50, 59.94 or 60 fps
   # timecodes.
   STANDARD_RATES = [23.976, 24, 25, 29.97, 30, 50, 59.94, 60].map do | float |
-    Approximately.approx(float)
+    Approximately.approx(float, 0.002)
   end.freeze
   
   NTSC_FPS = (30.0 * 1000 / 1001).freeze
@@ -66,14 +65,7 @@ class Timecode
   # will be interpreted as the total number of frames
   def initialize(total = 0, fps = DEFAULT_FPS)
     raise WrongFramerate, "FPS cannot be zero" if fps.zero?
-    
-    unless self.class.supported_framerates.include?(fps)
-      last_tc = self.class.supported_framerates[-1]
-      all_others = self.class.supported_framerates[0..-2]
-      supported = "%s and %s are supported" % [all_others.join(", "), last_tc]
-      raise WrongFramerate, "Framerate #{fps} is not in the list of supported framerates (#{supported})"
-    end 
-    
+    self.class.check_framerate!(fps)
     # If total is a string, use parse
     raise RangeError, "Timecode cannot be negative" if total.to_i < 0
     # Always cast framerate to float, and num of rames to integer
@@ -99,6 +91,14 @@ class Timecode
       @custom_framerates.push(rate)
     end
     
+    # Check the passed framerate and raise if it is not in the list
+    def check_framerate!(fps)
+      unless supported_framerates.include?(fps)
+        supported = "%s and %s are supported" % [supported_framerates[0..-2].join(", "), supported_framerates[-1]]
+        raise WrongFramerate, "Framerate #{fps} is not in the list of supported framerates (#{supported})"
+      end 
+    end
+    
     # Use initialize for integers and parsing for strings
     def new(from, fps = DEFAULT_FPS)
       from.is_a?(String) ? parse(from, fps) : super(from, fps)
@@ -108,7 +108,7 @@ class Timecode
     def soft_parse(input, with_fps = DEFAULT_FPS)
       parse(input) rescue new(0, with_fps)
     end
-      
+    
     # Parse timecode entered by the user. Will raise if the string cannot be parsed.
     # The following formats are supported:
     # * 10h 20m 10s 1f (or any combination thereof) - will be disassembled to hours, frames, seconds and so on automatically
