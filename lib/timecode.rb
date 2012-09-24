@@ -401,9 +401,8 @@ class Timecode
   end
   alias_method :with_fractional_seconds, :with_frames_as_fraction
   
-  # FFmpeg expects a fraction of a second as the last element instead of number of frames. Use this
-  # method to get the timecode that adheres to that expectation. The return of this method can be fed
-  # to ffmpeg directly.
+  # SRT uses a fraction of a second as the last element instead of number of frames, with a comma as
+  # the separator
   #  Timecode.parse("00:00:10:24", 25).with_srt_fraction #=> "00:00:10,96"
   def with_srt_fraction
     with_frames_as_fraction(WITH_FRACTIONS_OF_SECOND_COMMA)
