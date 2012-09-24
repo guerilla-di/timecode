@@ -348,6 +348,12 @@ describe "A custom Timecode descendant should" do
 
 end
 
+describe "Timecode.from_filename_in_sequence should" do
+  it "detect the timecode" do
+    tc = Timecode.from_filename_in_sequence("foobar.0000012.jpg", fps = 25)
+    tc.should.equal(Timecode.new(12, 25))
+  end
+end
 
 describe "Timecode.parse should" do
   

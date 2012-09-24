@@ -109,6 +109,13 @@ class Timecode
       parse(input) rescue new(0, with_fps)
     end
     
+    # Parses the timecode contained in a passed filename as frame number in a sequence
+    def from_filename_in_sequence(filename_with_or_without_path, fps = DEFAULT_FPS)
+      b = File.basename(filename_with_or_without_path)
+      number = b.scan(/\d+/).flatten[-1].to_i
+      new(number, fps)
+    end
+    
     # Parse timecode entered by the user. Will raise if the string cannot be parsed.
     # The following formats are supported:
     # * 10h 20m 10s 1f (or any combination thereof) - will be disassembled to hours, frames, seconds and so on automatically
