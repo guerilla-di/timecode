@@ -1,3 +1,18 @@
+def eval(&block)
+  if self.is_a?(Class)
+    class_eval(&block)
+  elsif self.is_a?(Module)
+    module_eval(&block)
+  elsif self.is_a?(Object)
+    instance_eval(&block)
+  end
+end
+unless defined?(Motion::Project::Config)
+  raise "This file must be required within a RubyMotion project Rakefile."
+end
+Motion::Project::App.setup do |app|
+  app.files << File.expand_path(File.join(File.dirname(__FILE__),'timecode.rb'))
+end
 # Timecode is a convenience object for calculating SMPTE timecode natively. 
 # The promise is that you only have to store two values to know the timecode - the amount
 # of frames and the framerate. An additional perk might be to save the dropframeness,
@@ -11,7 +26,8 @@
 #   composed_of :source_tc, :class_name => 'Timecode',
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
-require "approximately"
+# FIXME: #require is not supported in RubyMotion
+# require "approximately"
 
 class Timecode
   
