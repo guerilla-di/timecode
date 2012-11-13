@@ -1,18 +1,3 @@
-def eval(&block)
-  if self.is_a?(Class)
-    class_eval(&block)
-  elsif self.is_a?(Module)
-    module_eval(&block)
-  elsif self.is_a?(Object)
-    instance_eval(&block)
-  end
-end
-# unless defined?(Motion::Project::Config)
-#   raise "This file must be required within a RubyMotion project Rakefile."
-# end
-Motion::Project::App.setup do |app|
-  app.files << File.expand_path(File.join(File.dirname(__FILE__),'timecode.rb'))
-end
 # Timecode is a convenience object for calculating SMPTE timecode natively.
 # The promise is that you only have to store two values to know the timecode - the amount
 # of frames and the framerate. An additional perk might be to save the dropframeness,
@@ -26,52 +11,14 @@ end
 #   composed_of :source_tc, :class_name => 'Timecode',
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
+require 'approximately'
+
+
 class Timecode
 
   VERSION = '1.1.2'
 
-  include Comparable
-
-  module Approximately
-    VERSION = "1.1.0"
-    DEFAULT_DELTA = 0.01
-
-    # This object can be used for float comparisons. When it is instantiaded
-    # with a float and a delta it will respond to <=>(another_float) and
-    # will return equality if the float it's being compared to is within the
-    # delta
-    class DeltaFloat < Struct.new(:float, :delta)
-      include Comparable
-
-      def to_f
-        float.to_f
-      end
-
-      def <=>(another)
-        d = (to_f - another.to_f).abs
-        return 0 if d < delta
-        float <=> another.to_f
-      end
-
-      def inspect
-        "~%0.8f" % to_f
-      end
-
-      def to_s
-        inspect
-      end
-
-    end
-
-    # Returns the passed Float into a DeltaFloat object. The optional
-    # second argument is the delta that will be considered sufficient for
-    # the comparison to evaluate to true
-    def approx(float, delta = DEFAULT_DELTA)
-      DeltaFloat.new(float, delta)
-    end
-
-    module_function :approx
-  end
+  include Comparable, Approximately
 
   DEFAULT_FPS = 25.0
 
@@ -93,6 +40,7 @@ class Timecode
 
   COMPLETE_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{2})$/
   COMPLETE_TC_RE_24 = /^(\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
+  # jsilver added support for DFTC
   DF_TC_RE = /^(\d{1,2}):(\d{1,2}):(\d{1,2});(\d{2})$/
   FRACTIONAL_TC_RE = /^(\d{2}):(\d{2}):(\d{2})[\.,](\d{1,8})$/
   TICKS_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{3})$/
@@ -100,6 +48,7 @@ class Timecode
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
   WITH_FRACTIONS_OF_SECOND_COMMA = "%02d:%02d:%02d,%03d"
   WITH_FRAMES = "%02d:%02d:%02d:%02d"
+  WITH_FRAMES_DF = "%02d:%02d:%02d;%02d"
   WITH_FRAMES_24 = "%02d:%02d:%02d+%02d"
 
   #:startdoc:
@@ -118,14 +67,18 @@ class Timecode
 
   # Initialize a new Timecode object with a certain amount of frames and a framerate
   # will be interpreted as the total number of frames
-  def initialize(total = 0, fps = DEFAULT_FPS)
+  def initialize(total = 0, fps = DEFAULT_FPS, dftc=false)
     raise WrongFramerate, "FPS cannot be zero" if fps.zero?
     self.class.check_framerate!(fps)
     # If total is a string, use parse
     raise RangeError, "Timecode cannot be negative" if total.to_i < 0
     # Always cast framerate to float, and num of rames to integer
     @total, @fps = total.to_i, fps.to_f
-    @value = validate!
+    if dftc == false
+      @value = validate!
+    else
+      @value = dropframe!
+    end
     freeze
   end
 
@@ -155,8 +108,8 @@ class Timecode
     end
 
     # Use initialize for integers and parsing for strings
-    def new(from, fps = DEFAULT_FPS)
-      from.is_a?(String) ? parse(from, fps) : super(from, fps)
+    def new(from, fps = DEFAULT_FPS, dftc=false)
+      from.is_a?(String) ? parse(from, fps) : super(from, fps, dftc)
     end
 
     # Parse timecode and return zero if none matched
@@ -179,9 +132,11 @@ class Timecode
     def parse(spaced_input, with_fps = DEFAULT_FPS)
       input = spaced_input.strip
 
-      # Drop frame goodbye
+      # Drop frame ... Hello?
       if (input =~ DF_TC_RE)
-        raise Error, "We do not support drop-frame TC"
+        # raise Error, "We do not support drop-frame TC"
+        atoms_and_fps = input.scan(DF_TC_RE).to_a.flatten.map{|e| e.to_i} + [with_fps]
+        return df(*atoms_and_fps)
         # 00:00:00:00
       elsif (input =~ COMPLETE_TC_RE)
         atoms_and_fps = input.scan(COMPLETE_TC_RE).to_a.flatten.map{|e| e.to_i} + [with_fps]
@@ -229,7 +184,13 @@ class Timecode
     def at(hrs, mins, secs, frames, with_fps = DEFAULT_FPS)
       validate_atoms!(hrs, mins, secs, frames, with_fps)
       total = (hrs*(60*60*with_fps) +  mins*(60*with_fps) + secs*with_fps + frames).round
-      new(total, with_fps)
+      new(total, with_fps, false)
+    end
+
+    def df(hrs, mins, secs, frames, with_fps = DEFAULT_FPS)
+      validate_atoms!(hrs, mins, secs, frames, with_fps)
+      total = (hrs*(60*60*with_fps) +  mins*(60*with_fps) + secs*with_fps + frames).round
+      new(total, with_fps, true)
     end
 
     # Validate the passed atoms for the concrete framerate
@@ -372,11 +333,16 @@ class Timecode
   end
 
   # get formatted SMPTE timecode
-  def to_s
-    if (framerate_in_delta(fps, 24))
-      WITH_FRAMES_24 % value_parts
+  # added support for avid drop frame - jsilver
+  def to_s(dftc=false)
+    if dftc == false
+      if (framerate_in_delta(fps, 24))
+        WITH_FRAMES_24 % value_parts
+      else
+        WITH_FRAMES % value_parts
+      end
     else
-      WITH_FRAMES % value_parts
+      WITH_FRAMES_DF % value_parts
     end
   end
 
@@ -467,7 +433,89 @@ class Timecode
     (one.to_f - two.to_f).abs <= ALLOWED_FPS_DELTA
   end
 
-  private
+  def dropframe!
+    seconds = (@total.to_f/@fps).floor
+
+    realSeconds = seconds
+
+    # Round up
+    framerate = @fps.ceil
+
+    # Calculate minutes
+    minutes = ((seconds / 60.0) % 60).floor
+
+    # Calculate hours
+    hours = ((seconds / 60.0) - minutes).floor
+
+    # Remove the number of seconds used for minutes and hours
+    seconds -= (minutes * 60.0) + (hours * 3600.0)
+
+    # Remove floating point trail
+    seconds = seconds.floor
+
+    totalFrames = realSeconds * framerate
+
+    # Every 1000th frame is dropped, this is the inverse ratio
+    droppedFrameMagic = 1.0 - 1000.0/1001.0
+    # Calculate the number of frames that have been dropped
+    totalDroppedFrames = (totalFrames * droppedFrameMagic)
+
+
+    # Remove the number of dropped frames in minutes and hours
+    while totalDroppedFrames >= framerate
+      totalDroppedFrames -= framerate # Subtract 1 second in frames
+      seconds -= 1 # Subtract one second
+      # If negative seconds
+      if seconds < 0
+        minutes -= 1 # Remove a minute and
+        seconds = 59 # increase to highest second before minute
+
+        # If negative minutes
+        if minutes < 0
+          hours -= 1 # Remove an hour and
+          minutes = 59 # increase to highest minute before hour
+        end
+      end
+    end
+
+    # Calculate in seconds the number of frames
+    frameFloat = realSeconds - (realSeconds).floor
+
+    # Calculate the number of frames
+    frame = frameFloat * framerate
+
+    # If number of dropped frames is greater than frames this second
+    if totalDroppedFrames >= frame
+      seconds -= 1 # Remove a second
+      # If negative seconds
+      if seconds < 0
+        minutes -= 1 # Remove a minute and
+        seconds = 59 # increase to highest second before minute
+        # If negative minutes
+        if minutes < 0
+          hours -= 1 # Remove a minute and
+          minutes = 59 # increase to the highest minute before hour
+        end
+      end
+      # Remove the number of dropped frames from the new second
+      frame = framerate - totalDroppedFrames
+    else
+      # Remove the number of dropped frames
+      frame -= totalDroppedFrames
+    end
+    recalcedSeconds = (1.0/framerate*frame) +
+    (seconds) + (60*minutes) + (60*60*hours) +
+    (1.0/framerate*(totalFrames*droppedFrameMagic))
+
+    frameDiff = ((realSeconds - recalcedSeconds)/(1.0/framerate)).floor
+
+    frame += frameDiff
+
+    frame = frame.to_i
+
+    [hours, minutes, seconds, frame]
+  end
+
 
   # Prepare and format the values for TC output
   def validate!
