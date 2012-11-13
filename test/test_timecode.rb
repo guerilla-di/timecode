@@ -469,11 +469,25 @@ describe "Timecode.parse should" do
     tc.to_s.should.equal "00:00:07:02"
   end
 
-  # IT should not!
+  # disabled to add testing for dropframe
   # it "raise when trying to parse DF timecode" do
   #   df_tc = "00:00:00;01"
   #   lambda { Timecode.parse(df_tc)}.should.raise(Timecode::Error)
   # end
+
+  # real dropframe tests
+  it "allow parsing DF timecode" do
+
+    # parse DF timecode to nondrop
+    df_tc = "00:10:00;00"
+    Timecode.parse(df_tc, 29.97).to_s.should.equal "00:09:59:12"
+
+    df_tc = "00:20:00:00"
+    Timecode.parse("00:20:00:00", 30).to_df.should.equal "00:19:58;24"
+
+  end
+
+
 
   it "raise on improper format" do
     lambda { Timecode.parse("Meaningless nonsense", 25) }.should.raise Timecode::CannotParse

@@ -433,6 +433,10 @@ class Timecode
     (one.to_f - two.to_f).abs <= ALLOWED_FPS_DELTA
   end
 
+  def to_df
+    Timecode.df(hours, minutes, seconds, frames, fps).to_s(true)
+  end
+
   def dropframe!
     seconds = (@total.to_f/@fps).floor
 
@@ -531,6 +535,8 @@ class Timecode
 
     [hrs, mins, secs, frames]
   end
+
+  private
 
   def value_parts
     @value ||= validate!
