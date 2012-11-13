@@ -11,7 +11,6 @@ unless defined?(Motion::Project::Config)
   raise "This file must be required within a RubyMotion project Rakefile."
 end
 Motion::Project::App.setup do |app|
-  app.files << File.expand_path(File.join(File.dirname(__FILE__),'approximately.rb'))
   app.files << File.expand_path(File.join(File.dirname(__FILE__),'timecode.rb'))
 end
 # Timecode is a convenience object for calculating SMPTE timecode natively.
