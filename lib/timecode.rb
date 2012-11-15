@@ -44,6 +44,7 @@ class Timecode
   TICKS_TC_RE = /^(\d{2}):(\d{2}):(\d{2}):(\d{3})$/
   
   WITH_FRACTIONS_OF_SECOND = "%02d:%02d:%02d.%02d"
+  WITH_SRT_FRACTION = "%02d:%02d:%02d,%02d"
   WITH_FRACTIONS_OF_SECOND_COMMA = "%02d:%02d:%02d,%03d"
   WITH_FRAMES = "%02d:%02d:%02d:%02d"
   WITH_FRAMES_24 = "%02d:%02d:%02d+%02d"
@@ -405,7 +406,7 @@ class Timecode
   # the separator
   #  Timecode.parse("00:00:10:24", 25).with_srt_fraction #=> "00:00:10,96"
   def with_srt_fraction
-    with_frames_as_fraction(WITH_FRACTIONS_OF_SECOND_COMMA)
+    with_frames_as_fraction(WITH_SRT_FRACTION)
   end
   
   # Validate that framerates are within a small delta deviation considerable for floats

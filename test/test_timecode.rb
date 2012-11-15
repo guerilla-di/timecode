@@ -303,7 +303,7 @@ describe "A Timecode used with fractional number of seconds" do
     
     tc.with_frames_as_fraction.should.equal "00:00:03.96"
     tc.with_fractional_seconds.should.equal "00:00:03.96"
-    tc.with_srt_fraction.should_equal "00:00:03,96"
+    tc.with_srt_fraction.should.equal "00:00:03,96"
   end
   
   it "properly translate to frames when instantiated from fractional seconds" do
