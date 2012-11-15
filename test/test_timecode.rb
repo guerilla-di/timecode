@@ -378,6 +378,11 @@ describe "Timecode.parse should" do
     tc.to_s.should.equal "10:10:10:05"
   end
   
+  it "handle timecode with fractional seconds (euro style, SRT)" do
+    tc = Timecode.parse("10:10:10,200", 25)
+    tc.to_s.should.equal "10:10:10:05"
+  end
+  
   it "handle timecode with ticks" do
     tc = Timecode.parse("10:10:10:103", 25)
     tc.to_s.should.equal "10:10:10:10"
