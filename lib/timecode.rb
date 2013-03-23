@@ -30,7 +30,7 @@ class Timecode
   # supported formats are 23.976, 24, 25, 29.97, 30, 50, 59.94 or 60 fps
   # timecodes.
   STANDARD_RATES = [23.976, 24, 25, 29.97, 30, 50, 59.94, 60].map do | float |
-    Approximately.approx(float, 0.002)
+    Approximately.approx(float, 0.002) # Tolerance of 2 millisecs should do.
   end.freeze
   
   NTSC_FPS = (30.0 * 1000 / 1001).freeze
@@ -102,7 +102,7 @@ class Timecode
     end
     
     # Use initialize for integers and parsing for strings
-    def new(from, fps = DEFAULT_FPS)
+    def new(from = nil, fps = DEFAULT_FPS)
       from.is_a?(String) ? parse(from, fps) : super(from, fps)
     end
     
