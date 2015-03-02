@@ -15,7 +15,7 @@ require "approximately"
 
 class Timecode
   
-  VERSION = '1.1.2'
+  VERSION = '2.0.0'
   
   include Comparable, Approximately
   
@@ -77,6 +77,11 @@ class Timecode
   end
   
   def inspect # :nodoc:
+    string_repr = if (framerate_in_delta(fps, 24))
+      WITH_FRAMES_24 % value_parts
+    else
+      WITH_FRAMES % value_parts
+    end
     "#<Timecode:%s (%dF@%.2f)>" % [to_s, total, fps]
   end
   
@@ -320,11 +325,7 @@ class Timecode
   
   # get formatted SMPTE timecode
   def to_s
-    if (framerate_in_delta(fps, 24))
-      WITH_FRAMES_24 % value_parts
-    else
-      WITH_FRAMES % value_parts
-    end
+    WITH_FRAMES % value_parts
   end
   
   # get total frames as float

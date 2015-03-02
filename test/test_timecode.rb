@@ -381,7 +381,7 @@ describe "Timecode.parse should" do
   it "handle complete SMPTE timecode with plus for 24 frames per second" do
     simple_tc = "00:10:34+10"
     p = Timecode.parse(simple_tc)
-    p.to_s.must_equal(simple_tc)
+    p.to_s.must_equal("00:10:34:10")
     p.fps.must_equal 24
   end
   
@@ -518,6 +518,14 @@ describe "Timecode.soft_parse should" do
   end
 end
 
+describe 'Timecode#to_s' do
+  it 'formats 25 and 25 FPS timecodes uniformly' do
+    at25 = Timecode.parse("1h", 25)
+    at24 = Timecode.parse("1h", 24)
+    at25.to_s.must_equal "01:00:00:00"
+    at24.to_s.must_equal "01:00:00:00"
+  end
+end
 
 describe "Timecode with unsigned integer conversions should" do
   
