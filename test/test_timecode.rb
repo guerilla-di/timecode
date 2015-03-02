@@ -527,6 +527,15 @@ describe 'Timecode#to_s' do
   end
 end
 
+describe 'Timecode#inspect' do
+  it 'formats 25 and 25 FPS timecodes differently' do
+    at25 = Timecode.parse("1h", 25)
+    at24 = Timecode.parse("1h", 24)
+    at25.inspect.must_equal "#<Timecode:01:00:00:00 (90000F@25.00)>"
+    at24.inspect.must_equal "#<Timecode:01:00:00+00 (86400F@24.00)>"
+  end
+end
+
 describe "Timecode with unsigned integer conversions should" do
   
   it "parse from a 4x4bits packed 32bit unsigned int" do

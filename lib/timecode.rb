@@ -82,7 +82,7 @@ class Timecode
     else
       WITH_FRAMES % value_parts
     end
-    "#<Timecode:%s (%dF@%.2f)>" % [to_s, total, fps]
+    "#<Timecode:%s (%dF@%.2f)>" % [string_repr, total, fps]
   end
   
   class << self
