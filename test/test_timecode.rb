@@ -45,9 +45,9 @@ end
 
 describe "Timecode.validate_atoms! should" do
 
-  it "disallow more than 99 hrs" do
-    lambda{ Timecode.validate_atoms!(99,0,0,0, 25) }.must_be_silent
-    lambda{ Timecode.validate_atoms!(100,0,0,0, 25) }.must_raise(Timecode::RangeError)
+  it "disallow more than 999 hrs" do
+    lambda{ Timecode.validate_atoms!(999,0,0,0, 25) }.must_be_silent
+    lambda{ Timecode.validate_atoms!(1000,0,0,0, 25) }.must_raise(Timecode::RangeError)
   end
 
   it "disallow more than 59 minutes" do
@@ -70,9 +70,9 @@ end
 
 describe "Timecode.at should" do
 
-  it "disallow more than 99 hrs" do
-    lambda{ Timecode.at(99,0,0,0) }.must_be_silent
-    lambda{ Timecode.at(100,0,0,0) }.must_raise(Timecode::RangeError)
+  it "disallow more than 999 hrs" do
+    lambda{ Timecode.at(999,0,0,0) }.must_be_silent
+    lambda{ Timecode.at(1000,0,0,0) }.must_raise(Timecode::RangeError)
   end
 
   it "disallow more than 59 minutes" do
