@@ -12,7 +12,6 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 require "approximately"
-require "bigdecimal"
 
 class Timecode
 
@@ -420,10 +419,8 @@ class Timecode
 
   # Prepare and format the values for TC output
   def validate!
-    frames = BigDecimal.new(@total)
-    fps = BigDecimal.new(@fps, 6)
-    secs = (frames / fps).floor
-    rest_frames = (frames % fps).floor
+    secs = (@total / @fps).floor
+    rest_frames = (@total % @fps).floor
     hrs = secs.to_i / 3600
     mins = (secs.to_i / 60) % 60
     secs = secs % 60

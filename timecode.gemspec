@@ -46,5 +46,4 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<bacon>, [">= 0"])
   end
-  s.add_dependency 'approximately', '~> 1.1'
 end
