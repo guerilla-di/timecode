@@ -379,6 +379,18 @@ describe "Timecode.from_filename_in_sequence should" do
   end
 end
 
+describe 'Timecode with hours larger than 99 should' do
+  it 'print itself without rollover' do
+    tc = Timecode.at(129,34,42,5)
+    tc.to_s_without_rollover.must_equal '129:34:42:05'
+  end
+  
+  it 'print itself with rollover when using to_smpte' do
+    tc = Timecode.at(129,34,42,5)
+    tc.to_s.must_equal '29:34:42:05'
+  end
+end
+
 describe "Timecode.parse should" do
 
   it "handle complete SMPTE timecode" do

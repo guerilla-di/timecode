@@ -323,11 +323,20 @@ class Timecode
     self.class.new(@total, new_fps)
   end
 
-  # get formatted SMPTE timecode
+  # Get formatted SMPTE timecode. Hour count larger than 99 will roll over to the next
+  # remainder (129 hours will produce "29:00:00:00:00"). If you need the whole hour count
+  # use `to_s_without_rollover`
   def to_s
+    vs = value_parts
+    vs[0] = vs[0] % 100 # Rollover any values > 99
+    WITH_FRAMES % vs
+  end
+  
+  # Get formatted SMPTE timecode. Hours might be larger than 99 and will not roll over
+  def to_s_without_rollover
     WITH_FRAMES % value_parts
   end
-
+  
   # get total frames as float
   def to_f
     @total
