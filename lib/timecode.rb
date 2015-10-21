@@ -12,6 +12,7 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 require "approximately"
+require "bigdecimal"
 
 class Timecode
 
@@ -193,8 +194,8 @@ class Timecode
           raise RangeError, "There can be no more than 59 minutes, got #{mins}"
         when secs > 59
           raise RangeError, "There can be no more than 59 seconds, got #{secs}"
-        when frames > (with_fps - 1)
-          raise RangeError, "There can be no more than #{with_fps - 1} frames @#{with_fps}, got #{frames}"
+        when frames >= with_fps
+          raise RangeError, "There can be no more than #{with_fps} frames @#{with_fps}, got #{frames}"
       end
     end
 
@@ -419,17 +420,17 @@ class Timecode
 
   # Prepare and format the values for TC output
   def validate!
-    frames = @total
-    secs = (@total.to_f/@fps).floor
-    frames-=(secs*@fps)
-    mins = (secs/60).floor
-    secs -= (mins*60)
-    hrs = (mins/60).floor
-    mins-= (hrs*60)
+    frames = BigDecimal.new(@total)
+    fps = BigDecimal.new(@fps, 6)
+    secs = (frames / fps).floor
+    rest_frames = (frames % fps).floor
+    hrs = secs.to_i / 3600
+    mins = (secs.to_i / 60) % 60
+    secs = secs % 60
 
-    self.class.validate_atoms!(hrs, mins, secs, frames, @fps)
+    self.class.validate_atoms!(hrs, mins, secs, rest_frames, @fps)
 
-    [hrs, mins, secs, frames]
+    [hrs, mins, secs, rest_frames]
   end
 
   def value_parts

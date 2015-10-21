@@ -33,6 +33,14 @@ describe "Timecode.new should" do
     Timecode.new("00:25:30:10", 25).must_equal Timecode.parse("00:25:30:10")
   end
 
+  it 'calculates correctly (spot check with special values)' do
+    lambda{ Timecode.new 496159, 23.976 }.must_be_silent
+    lambda{ Timecode.new 548999, 23.976 }.must_be_silent
+  end
+
+  it 'calculates seconds correctly for rational fps' do
+    Timecode.new(548999, 23.976).seconds.must_equal 37
+  end
 end
 
 describe "Timecode.validate_atoms! should" do

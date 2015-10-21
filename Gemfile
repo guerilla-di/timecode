@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem "approximately", "~> 1.1"
+gemspec
 
 group :development do
   gem "jeweler", '1.8.4' # Last one without the stupid nokogiri dependency
