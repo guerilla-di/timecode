@@ -1,3 +1,8 @@
+=== 2.1.0 / 2015-10-21
+
+* Allow hour counts larger than 99. Note that when printed using to_s the hours will roll over.
+* Improve fractional framerate handling.
+
 === 1.1.2 / 2011-10-11
 
 * Fix warnings on Ruby 1.9.3
