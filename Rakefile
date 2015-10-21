@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'jeweler'
 require './lib/timecode'
-
+require 'thread'
 Jeweler::Tasks.new do |gem|
   gem.version = Timecode::VERSION
   gem.name = "timecode"
