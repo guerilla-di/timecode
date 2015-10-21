@@ -48,4 +48,3 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<bacon>, [">= 0"])
   end
 end
-
