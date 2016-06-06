@@ -40,7 +40,7 @@ class Timecode
     end
   end
 
-  VERSION = '2.1.1'
+  VERSION = '2.2.1'
 
   include Comparable, Approximately
 
