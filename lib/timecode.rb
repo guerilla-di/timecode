@@ -1,7 +1,6 @@
 # Timecode is a convenience object for calculating SMPTE timecode natively.
 # The promise is that you only have to store two values to know the timecode - the amount
-# of frames and the framerate. An additional perk might be to save the dropframeness,
-# but we avoid that at this point.
+# of frames and the framerate.
 #
 # You can calculate in timecode objects as well as with conventional integers and floats.
 # Timecode is immutable and can be used as a value object. Timecode objects are sortable.
