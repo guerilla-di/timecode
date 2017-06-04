@@ -1,3 +1,11 @@
+=== 2.1.2 / 2017-06-04
+
+* Replace jeweler with standard rubygems tasks for rolling releases etc.
+
+=== 2.1.1 / 2016-06-06
+
+* Add support for drop-frame timecode with proper calculations (pcipriano)
+
 === 2.1.0 / 2015-10-21
 
 * Allow hour counts larger than 99. Note that when printed using to_s the hours will roll over.
