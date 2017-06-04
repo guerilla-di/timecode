@@ -11,7 +11,7 @@
 #     :mapping => [%w(source_tc_frames total), %w(tape_fps fps)]
 
 require "approximately"
-
+require File.dirname(__FILE__) + '/timecode/version'
 class Timecode
   
   class ComputationValues
@@ -38,8 +38,6 @@ class Timecode
       @nd_frames_per_min = rounded_base * 60
     end
   end
-
-  VERSION = '2.2.1'
 
   include Comparable, Approximately
 
