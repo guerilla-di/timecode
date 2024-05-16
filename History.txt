@@ -1,3 +1,7 @@
+=== 2.2.3 / 2017-06-04
+
+* Fix drop-frame timecode handling
+
 === 2.2.2 / 2017-06-04
 
 * Replace jeweler with standard rubygems tasks for rolling releases etc.
