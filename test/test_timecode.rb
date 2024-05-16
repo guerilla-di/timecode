@@ -615,6 +615,10 @@ describe "Timecode.parse should" do
   it "properly handle 09 and 08 as part of complete TC pattern" do
     Timecode.parse( "09:08:09:08", 25).total.must_equal 822233
   end
+
+  it "properly handle 10 minute DF timecode" do
+    Timecode.parse( "00:10:00;00", 29.97).total.must_equal 17982
+  end
 end
 
 describe "Timecode.soft_parse should" do

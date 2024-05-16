@@ -209,7 +209,7 @@ class Timecode
     def at(hrs, mins, secs, frames, with_fps = DEFAULT_FPS, drop_frame = false)
       validate_atoms!(hrs, mins, secs, frames, with_fps)
       comp = ComputationValues.new(with_fps, drop_frame)
-      if drop_frame && secs == 0 && (mins % 10) && (frames < comp.drop_count)
+      if drop_frame && secs == 0 && (mins % 10 > 0) && (frames < comp.drop_count)
         frames = comp.drop_count
       end
       
